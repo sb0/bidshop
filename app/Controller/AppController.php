@@ -31,4 +31,50 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+   public $components = array(
+                        'Session',
+                        'Auth' => array(
+			       'loginAction' => array(
+                                               'controller' => 'user',
+                                               'action' => 'login'
+                               ),
+/*
+                               'loginRedirect' => array(
+                                               'controller' => 'user',
+                                               'action' => 'index'
+                               ),
+*/
+                               'loginRedirect' => array(
+                                               'controller' => 'vendor',
+                                               'action' => 'index'
+                               ),
+/* Causes loop with the 'user' => 'logout' action
+                               'logoutRedirect' => array(
+                                                'controller' => 'user',
+                                                'action' => 'logout'
+                               ),
+*/
+                               'authenticate' => array('Form')
+                         ),
+                        'DebugKit.Toolbar'
+   );
+//-----------------------------------------------------------------------------
+   public function beforeFilter() {
+      if (isset($this->request->params['admin'])) {
+//echo "\n<pre>PARAMS array\n";
+//debug($this->request->params);
+echo "\n<pre>PARAMS=admin\n";
+debug($this->request->params['admin']);
+echo "\n</pre>\n";
+//         $this->Auth->loginRedirect = array('controller'=>'user', 'action'=>'index');
+         $this->Auth->loginRedirect = array('controller'=>'vendor', 'action'=>'index');
+      } else {
+echo "\n<pre>THIS IS NOT AN ADMIN!!!\n";
+echo "\n</pre>\n";
+      // sb: Definte actions which Auth does not need to check sid and session
+         $this->Auth->loginRedirect = array('controller'=>'vendor', 'action'=>'index');
+         $this->Auth->allow('register', 'thanks');
+      }
+   }
+//-----------------------------------------------------------------------------
 }
